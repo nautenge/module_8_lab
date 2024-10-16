@@ -1,0 +1,403 @@
+using System;
+using System.Collections.Generic;
+
+public interface ICommand
+{
+    void Execute();
+}
+
+public class Light
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Light is turned on.");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Light is turned off.");
+    }
+}
+
+public class TurnOnCommand : ICommand
+{
+    private Light _light;
+
+    public TurnOnCommand(Light light)
+    {
+        _light = light;
+    }
+
+    public void Execute()
+    {
+        _light.TurnOn();
+    }
+}
+
+public class TurnOffCommand : ICommand
+{
+    private Light _light;
+
+    public TurnOffCommand(Light light)
+    {
+        _light = light;
+    }
+
+    public void Execute()
+    {
+        _light.TurnOff();
+    }
+}
+
+public class RemoteControl
+{
+    private ICommand _command;
+    private readonly List<ICommand> _history = new List<ICommand>();
+
+    public void SetCommand(ICommand command)
+    {
+        _command = command;
+    }
+
+    public void PressButton()
+    {
+        _command.Execute();
+        _history.Add(_command);
+    }
+}
+
+internal class Program
+{
+    static void Main(string[] args)
+    {
+        Light light = new Light();
+        RemoteControl remoteControl = new RemoteControl();
+
+        remoteControl.SetCommand(new TurnOnCommand(light));
+        remoteControl.PressButton();
+
+        remoteControl.SetCommand(new TurnOffCommand(light));
+        remoteControl.PressButton();
+    }
+}
+////////////////////////////////////////////////////////////////////////// 
+2 ЗАДАНИЕ ЕСТЬ ДВА ПРИМЕРА ПО ЗАДАНИЮ СДЕЛАННОЕ И ПО ВАШЕМУ КОДУ
+using System;
+
+public abstract class Beverage
+{
+    public void PrepareRecipe()
+    {
+        BoilWater();
+        Brew();
+        PourInCup();
+        if (WantCondiments())
+        {
+            AddCondiments();
+        }
+    }
+
+    private void BoilWater()
+    {
+        Console.WriteLine("Кипячение воды");
+    }
+
+    private void PourInCup()
+    {
+        Console.WriteLine("Наливание в чашку");
+    }
+
+    protected abstract void Brew();
+    protected abstract void AddCondiments();
+
+    protected virtual bool WantCondiments()
+    {
+        return true;
+    }
+}
+
+public class Tea : Beverage
+{
+    protected override void Brew()
+    {
+        Console.WriteLine("Заваривание чая");
+    }
+
+    protected override void AddCondiments()
+    {
+        Console.WriteLine("Добавление лимона");
+    }
+}
+
+public class Coffee : Beverage
+{
+    protected override void Brew()
+    {
+        Console.WriteLine("Заваривание кофе");
+    }
+
+    protected override void AddCondiments()
+    {
+        Console.WriteLine("Добавление сахара и молока");
+    }
+
+    protected override bool WantCondiments()
+    {
+        Console.Write("Добавить сахар и молоко? (y/n): ");
+        string userInput = Console.ReadLine();
+        return userInput.ToLower().StartsWith("y");
+    }
+}
+
+public class HotChocolate : Beverage
+{
+    protected override void Brew()
+    {
+        Console.WriteLine("Приготовление горячего шоколада");
+    }
+
+    protected override void AddCondiments()
+    {
+        Console.WriteLine("Добавление маршмеллоу");
+    }
+}
+
+public class CustomCoffee : Beverage
+{
+    protected override void Brew()
+    {
+        Console.WriteLine("Заваривание кофе");
+    }
+
+    protected override void AddCondiments()
+    {
+        Console.Write("Выберите тип молока (Обычное, Миндальное, Овсяное): ");
+        string milkType = Console.ReadLine();
+        Console.WriteLine($"Добавление {milkType} молока");
+    }
+}
+
+public class IngredientException : Exception
+{
+    public IngredientException(string message) : base(message) { }
+}
+
+public class CustomHotChocolate : Beverage
+{
+    protected override void Brew()
+    {
+        Console.WriteLine("Приготовление горячего шоколада");
+    }
+
+    protected override void AddCondiments()
+    {
+        try
+        {
+            CheckIngredients();
+            Console.WriteLine("Добавление маршмеллоу");
+        }
+        catch (IngredientException ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void CheckIngredients()
+    {
+        bool hasMarshmallows = false;
+        if (!hasMarshmallows)
+        {
+            throw new IngredientException("Маршмеллоу закончились!");
+        }
+    }
+}
+
+internal class Program
+{
+    static void Main(string[] args)
+    {
+        Beverage tea = new Tea();
+        Console.WriteLine("Приготовление чая:");
+        tea.PrepareRecipe();
+
+        Beverage coffee = new Coffee();
+        Console.WriteLine("\nПриготовление кофе:");
+        coffee.PrepareRecipe();
+
+        Beverage hotChocolate = new HotChocolate();
+        Console.WriteLine("\nПриготовление горячего шоколада:");
+        hotChocolate.PrepareRecipe();
+
+        Beverage customCoffee = new CustomCoffee();
+        Console.WriteLine("\nПриготовление кастомного кофе:");
+        customCoffee.PrepareRecipe();
+
+        Beverage customHotChocolate = new CustomHotChocolate();
+        Console.WriteLine("\nПриготовление кастомного горячего шоколада с проверкой ингредиентов:");
+        customHotChocolate.PrepareRecipe();
+    }
+}
+///////
+using System;
+
+public abstract class Beverage
+{
+    public void PrepareRecipe()
+    {
+        BoilWater();
+        Brew();
+        PourInCup();
+        AddCondiments();
+    }
+
+    private void BoilWater()
+    {
+        Console.WriteLine("Кипячение воды");
+    }
+
+    private void PourInCup()
+    {
+        Console.WriteLine("Наливание в чашку");
+    }
+
+    protected abstract void Brew();
+    protected abstract void AddCondiments();
+}
+
+public class Tea : Beverage
+{
+    protected override void Brew()
+    {
+        Console.WriteLine("Заваривание чая");
+    }
+
+    protected override void AddCondiments()
+    {
+        Console.WriteLine("Добавление лимона");
+    }
+}
+
+public class Coffee : Beverage
+{
+    protected override void Brew()
+    {
+        Console.WriteLine("Заваривание кофе");
+    }
+
+    protected override void AddCondiments()
+    {
+        Console.WriteLine("Добавление сахара и молока");
+    }
+}
+
+internal class Program
+{
+    static void Main(string[] args)
+    {
+        Beverage tea = new Tea();
+        Console.WriteLine("Приготовление чая:");
+        tea.PrepareRecipe();
+
+        Beverage coffee = new Coffee();
+        Console.WriteLine("\nПриготовление кофе:");
+        coffee.PrepareRecipe();
+    }
+}
+///////////////////////////////////////////////////////////////////////////
+
+
+
+using System;
+using System.Collections.Generic;
+
+public interface IMediator
+{
+    void SendMessage(string message, Colleague sender);
+}
+
+public abstract class Colleague
+{
+    protected IMediator _mediator;
+
+    public Colleague(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    public abstract void ReceiveMessage(string message);
+}
+
+
+public class ChatMediator : IMediator
+{
+    private List<Colleague> _colleagues;
+
+    public ChatMediator()
+    {
+        _colleagues = new List<Colleague>();
+    }
+
+    public void RegisterColleague(Colleague colleague)
+    {
+        _colleagues.Add(colleague);
+    }
+
+    public void SendMessage(string message, Colleague sender)
+    {
+        foreach (var colleague in _colleagues)
+        {
+            if (colleague != sender)
+            {
+                colleague.ReceiveMessage(message);
+            }
+        }
+    }
+}
+
+
+public class User : Colleague
+{
+    private string _name;
+
+    public User(IMediator mediator, string name) : base(mediator)
+    {
+        _name = name;
+    }
+
+    public void Send(string message)
+    {
+        Console.WriteLine($"{_name} отправляет сообщение: {message}");
+        _mediator.SendMessage(message, this);
+    }
+
+    public override void ReceiveMessage(string message)
+    {
+        Console.WriteLine($"{_name} получает сообщение: {message}");
+    }
+}
+
+
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        ChatMediator chatMediator = new ChatMediator();
+
+        User user1 = new User(chatMediator, "Alisa");
+        User user2 = new User(chatMediator, "Bob");
+        User user3 = new User(chatMediator, "Charli");
+
+        chatMediator.RegisterColleague(user1);
+        chatMediator.RegisterColleague(user2);
+        chatMediator.RegisterColleague(user3);
+
+        user1.Send("Привет всем!");
+        user2.Send("Привет!");
+        user3.Send("Привет, Bob!");
+    }
+}
+
+
+
+
